@@ -242,9 +242,6 @@ export default class extends Component {
         : 0
     }
 
-    // Default: horizontal
-        let { width, height } = Dimensions.get('window')
-        width = this.props.slideWidth || width
     //-----------------------------------------------------
     // set direction
     //-----------------------------------------------------
@@ -256,10 +253,9 @@ export default class extends Component {
     //-----------------------------------------------------
 
     if (props.width) {
-      initState.width = props.slideWidth || props.width
-    } else if (this.state && this.state.width){
-      initState.width = props.slideWidth || this.state.width
-
+      initState.width = props.width
+    } else if (this.state && this.state.width) {
+      initState.width = this.state.width
     } else {
       initState.width = window.width
     }
@@ -314,7 +310,7 @@ export default class extends Component {
   onLayout = (event) => {
     const {width, height} = event.nativeEvent.layout
     const offset = this.internals.offset = {}
-    const state = { width: this.props.slideWidth || width, height}
+    const state = { this.props.slideWidth || width, height}
 
     if (this.state.total > 1) {
       let setup = this.state.index
