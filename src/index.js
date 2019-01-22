@@ -271,6 +271,9 @@ export default class extends Component {
     } else {
       initState.height = window.height
     }
+    initState.offset[initState.dir] = initState.dir === 'y'
+          ? height * props.index
+          : props.slideWidth ? props.slideWidth * props.index : width * props.index
 
     //-----------------------------------------------------
     // set offset
@@ -307,7 +310,7 @@ export default class extends Component {
   onLayout = (event) => {
     const {width, height} = event.nativeEvent.layout
     const offset = this.internals.offset = {}
-    const state = {width, height}
+    const state = { this.props.slideWidth || width, height}
 
     if (this.state.total > 1) {
       let setup = this.state.index
@@ -316,7 +319,7 @@ export default class extends Component {
       }
       offset[this.state.dir] = this.state.dir === 'y'
         ? height * setup
-        : width * setup
+        : this.props.slideWidth ? this.props.slideWidth * setup : width * setup
     }
 
     // only update the offset in state if needed, updating offset while swiping
@@ -389,7 +392,7 @@ export default class extends Component {
     // making our events coming from android compatible to updateIndex logic
     if (!e.nativeEvent.contentOffset) {
       if (this.state.dir === 'x') {
-        e.nativeEvent.contentOffset = {x: e.nativeEvent.position * this.state.width}
+        e.nativeEvent.contentOffset = {x: e.nativeEvent.position * this.props.slideWidth || this.state.width}
       } else {
         e.nativeEvent.contentOffset = {y: e.nativeEvent.position * this.state.height}
       }
@@ -430,7 +433,7 @@ export default class extends Component {
   updateIndex = (offset, dir, cb) => {
     let index = this.state.index
     const diff = offset[dir] - this.internals.offset[dir]
-    const step = dir === 'x' ? this.state.width : this.state.height
+    const step = dir === 'x' ? this.props.slideWidth || state.width : state.height
     let loopJump = false
 
     // Do nothing if offset no change.
@@ -493,12 +496,13 @@ export default class extends Component {
     const diff = (this.props.loop ? 1 : 0) + index + this.state.index
     let x = 0
     let y = 0
-    if (state.dir === 'x') x = diff * state.width
+    if (state.dir === 'x') x = diff * this.props.slideWidth || state.width
     if (state.dir === 'y') y = diff * state.height
 
     if (Platform.OS !== 'ios') {
       this.scrollView && this.scrollView[animated ? 'setPage' : 'setPageWithoutAnimation'](diff)
     } else {
+      console.warn(diff * this.props.slideWidth)
       this.scrollView && this.scrollView.scrollTo({ x, y, animated })
     }
 
