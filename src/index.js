@@ -259,7 +259,7 @@ export default class extends Component {
 
 
     this.internals = {
-       offset: initState.offset,
+      ...this.internals,
       isScrolling: false
     };
     return initState
@@ -367,6 +367,7 @@ export default class extends Component {
       // if `onMomentumScrollEnd` registered will be called here
       this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e, this.fullState(), this)
     })
+    if (Platform.OS === 'android') this.updateAndroidIndex(e.nativeEvent.position)
   }
 
   /*
@@ -447,6 +448,10 @@ export default class extends Component {
     } else {
       this.setState(newState, cb)
     }
+  }
+
+  updateAndroidIndex = (pos) => {
+    this.setState({index: pos})
   }
 
   /**
