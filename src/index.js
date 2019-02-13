@@ -443,7 +443,6 @@ export default class extends Component {
    */
 
   scrollBy = (index, animated = true) => {
-    console.warn(index)
     // if (this.internals.isScrolling || this.state.total < 2) return
     const state = this.state
     const diff = (this.props.loop ? 1 : 0) + index + this.state.index
@@ -455,7 +454,7 @@ export default class extends Component {
     if (Platform.OS !== 'ios')
       this.scrollView && this.scrollView[animated ? 'setPage' : 'setPageWithoutAnimation'](diff)
     else {
-      console.warn(diff * this.props.slideWidth)
+      // console.warn(diff * this.props.slideWidth)
       this.scrollView && this.scrollView.scrollTo({x, y, animated})
     }
 
