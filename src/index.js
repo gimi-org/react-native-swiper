@@ -1,8 +1,5 @@
-/**
- * react-native-swiper
- * @author leecade<leecade@163.com>
- */
-import React, { Component } from 'react'
+/*eslint-disable */
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   Text,
@@ -28,7 +25,7 @@ const styles = {
   },
 
   wrapperIOS: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
 
   wrapperAndroid: {
@@ -38,7 +35,7 @@ const styles = {
 
   slide: {
     alignSelf: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
 
   pagination_x: {
@@ -109,15 +106,15 @@ export default class extends Component {
     children: PropTypes.node.isRequired,
     containerStyle: PropTypes.oneOfType([
       PropTypes.object,
-      PropTypes.number,
+      PropTypes.number
     ]),
     style: PropTypes.oneOfType([
       PropTypes.object,
-      PropTypes.number,
+      PropTypes.number
     ]),
     scrollViewStyle: PropTypes.oneOfType([
       PropTypes.object,
-      PropTypes.number,
+      PropTypes.number
     ]),
     pagingEnabled: PropTypes.bool,
     showsHorizontalScrollIndicator: PropTypes.bool,
@@ -215,7 +212,7 @@ export default class extends Component {
 
   initState (props, updateIndex = false) {
     // set the current state
-    const state = this.state || { width: 0, height: 0, offset: { x: 0, y: 0 } }
+    const state = this.state || {width: 0, height: 0, offset: {x: 0, y: 0}}
 
     const initState = {
       autoplayEnd: false,
@@ -225,43 +222,39 @@ export default class extends Component {
 
     initState.total = props.children ? props.children.length || 1 : 0
 
-    if (state.total === initState.total && !updateIndex) {
+    if (state.total === initState.total && !updateIndex)
       // retain the index
       initState.index = state.index
-    } else {
+    else
       initState.index = initState.total > 1 ? Math.min(props.index, initState.total - 1) : 0
-    }
 
     // Default: horizontal
-    let { width, height } = Dimensions.get('window')
+    let {width, height} = Dimensions.get('window')
     width = this.props.slideWidth || width
     initState.dir = props.horizontal === false ? 'y' : 'x'
 
-    if (props.width) {
+    if (props.width)
       initState.width = props.slideWidth || props.width
-    } else if (this.state && this.state.width){
+    else if (this.state && this.state.width)
       initState.width = props.slideWidth || this.state.width
-    } else {
-      initState.width = props.slideWidth || width;
-    }
+    else
+      initState.width = props.slideWidth || width
 
-    if (props.height) {
+    if (props.height)
       initState.height = props.height
-    } else if (this.state && this.state.height){
+    else if (this.state && this.state.height)
       initState.height = this.state.height
-    } else {
-      initState.height = height;
-    }
+    else
+      initState.height = height
 
     initState.offset[initState.dir] = initState.dir === 'y'
       ? height * props.index
       : props.slideWidth ? props.slideWidth * props.index : width * props.index
 
-
     this.internals = {
       ...this.internals,
       isScrolling: false
-    };
+    }
     return initState
   }
 
@@ -271,7 +264,7 @@ export default class extends Component {
   }
 
   onLayout = (event) => {
-    const { width, height } = event.nativeEvent.layout
+    const {width, height} = event.nativeEvent.layout
     const offset = this.internals.offset = {}
     const state = {width: this.props.slideWidth || width, height}
 
@@ -287,19 +280,17 @@ export default class extends Component {
 
     // only update the offset in state if needed, updating offset while swiping
     // causes some bad jumping / stuttering
-    if (!this.state.offset || width !== this.state.width || height !== this.state.height) {
+    if (!this.state.offset || width !== this.state.width || height !== this.state.height)
       state.offset = offset
-    }
 
     // related to https://github.com/leecade/react-native-swiper/issues/570
     // contentOffset is not working in react 0.48.x so we need to use scrollTo
     // to emulate offset.
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'ios')
       if (this.initialRender && this.state.total > 1) {
         this.scrollView.scrollTo({...offset, animated: false})
-        this.initialRender = false;
+        this.initialRender = false
       }
-    }
 
     this.setState(state)
   }
@@ -324,11 +315,11 @@ export default class extends Component {
     this.autoplayTimer && clearTimeout(this.autoplayTimer)
     this.autoplayTimer = setTimeout(() => {
       if (!this.props.loop && (
-          this.props.autoplayDirection
-            ? this.state.index === this.state.total - 1
-            : this.state.index === 0
-        )
-      ) return this.setState({ autoplayEnd: true })
+        this.props.autoplayDirection
+          ? this.state.index === this.state.total - 1
+          : this.state.index === 0
+      )
+      ) return this.setState({autoplayEnd: true})
 
       this.scrollBy(this.props.autoplayDirection ? 1 : -1)
     }, this.props.autoplayTimeout * 1000)
@@ -352,13 +343,12 @@ export default class extends Component {
     // update scroll state
     this.internals.isScrolling = false
     // making our events coming from android compatible to updateIndex logic
-    if (!e.nativeEvent.contentOffset) {
+    if (!e.nativeEvent.contentOffset)
       if (this.state.dir === 'x') {
         e.nativeEvent.contentOffset = {x: e.nativeEvent.position * this.props.slideWidth || this.state.width}
       } else {
         e.nativeEvent.contentOffset = {y: e.nativeEvent.position * this.state.height}
       }
-    }
 
     this.updateIndex(e.nativeEvent.contentOffset, this.state.dir, () => {
       this.autoplay()
@@ -367,7 +357,6 @@ export default class extends Component {
       // if `onMomentumScrollEnd` registered will be called here
       this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e, this.fullState(), this)
     })
-    if (Platform.OS === 'android') this.updateAndroidIndex(e.nativeEvent.position)
   }
 
   /*
@@ -375,17 +364,16 @@ export default class extends Component {
    * @param {object} e native event
    */
   onScrollEndDrag = e => {
-    const { contentOffset } = e.nativeEvent
-    const { horizontal, children } = this.props
-    const { index } = this.state
-    const { offset } = this.internals
+    const {contentOffset} = e.nativeEvent
+    const {horizontal, children} = this.props
+    const {index} = this.state
+    const {offset} = this.internals
     const previousOffset = horizontal ? offset.x : offset.y
     const newOffset = horizontal ? contentOffset.x : contentOffset.y
 
     if (previousOffset === newOffset &&
-      (index === 0 || index === children.length - 1)) {
+      (index === 0 || index === children.length - 1))
       this.internals.isScrolling = false
-    }
   }
 
   /**
@@ -396,7 +384,7 @@ export default class extends Component {
   updateIndex = (offset, dir, cb) => {
     const state = this.state
     let index = state.index
-    if (!this.internals.offset)   // Android not setting this onLayout first? https://github.com/leecade/react-native-swiper/issues/582
+    if (!this.internals.offset) // Android not setting this onLayout first? https://github.com/leecade/react-native-swiper/issues/582
       this.internals.offset = {}
     const diff = offset[dir] - this.internals.offset[dir]
     const step = dir === 'x' ? this.props.slideWidth || state.width : state.height
@@ -410,7 +398,7 @@ export default class extends Component {
     // parseInt() ensures it's always an integer
     index = parseInt(index + Math.round(diff / step))
 
-    if (this.props.loop) {
+    if (this.props.loop)
       if (index <= -1) {
         index = state.total - 1
         offset[dir] = step * state.total
@@ -420,7 +408,6 @@ export default class extends Component {
         offset[dir] = step
         loopJump = true
       }
-    }
 
     const newState = {}
     newState.index = index
@@ -429,29 +416,24 @@ export default class extends Component {
     this.internals.offset = offset
 
     // only update offset in state if loopJump is true
-    if (loopJump) {
+    if (loopJump)
       // when swiping to the beginning of a looping set for the third time,
       // the new offset will be the same as the last one set in state.
       // Setting the offset to the same thing will not do anything,
       // so we increment it by 1 then immediately set it to what it should be,
       // after render.
       if (offset[dir] === this.internals.offset[dir]) {
-        newState.offset = { x: 0, y: 0 }
+        newState.offset = {x: 0, y: 0}
         newState.offset[dir] = offset[dir] + 1
         this.setState(newState, () => {
-          this.setState({ offset: offset }, cb)
+          this.setState({offset: offset}, cb)
         })
       } else {
         newState.offset = offset
         this.setState(newState, cb)
       }
-    } else {
+    else
       this.setState(newState, cb)
-    }
-  }
-
-  updateAndroidIndex = (pos) => {
-    this.setState({index: pos})
   }
 
   /**
@@ -461,29 +443,28 @@ export default class extends Component {
    */
 
   scrollBy = (index, animated = true) => {
-    if (this.internals.isScrolling || this.state.total < 2) return
+    console.warn(index)
+    // if (this.internals.isScrolling || this.state.total < 2) return
     const state = this.state
     const diff = (this.props.loop ? 1 : 0) + index + this.state.index
     let x = 0
     let y = 0
-    if (state.dir === 'x') x = diff * this.props.slideWidth || state.width
+    if (state.dir === 'x') x = diff * (this.props.slideWidth || state.width)
     if (state.dir === 'y') y = diff * state.height
 
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== 'ios')
       this.scrollView && this.scrollView[animated ? 'setPage' : 'setPageWithoutAnimation'](diff)
-    } else {
+    else {
       console.warn(diff * this.props.slideWidth)
       this.scrollView && this.scrollView.scrollTo({x, y, animated})
     }
 
     // update scroll state
     this.internals.isScrolling = true
-    this.setState({
-      autoplayEnd: false
-    })
+    this.setState({autoplayEnd: false})
 
     // trigger onScrollEnd manually in android
-    if (!animated || Platform.OS !== 'ios') {
+    if (!animated || Platform.OS !== 'ios')
       setImmediate(() => {
         this.onScrollEnd({
           nativeEvent: {
@@ -491,7 +472,6 @@ export default class extends Component {
           }
         })
       })
-    }
   }
 
   scrollViewPropOverrides = () => {
@@ -508,7 +488,7 @@ export default class extends Component {
     ]
     */
 
-    for (let prop in props) {
+    for (let prop in props)
       // if(~scrollResponders.indexOf(prop)
       if (typeof props[prop] === 'function' &&
         prop !== 'onMomentumScrollEnd' &&
@@ -518,7 +498,6 @@ export default class extends Component {
         let originResponder = props[prop]
         overrides[prop] = (e) => originResponder(e, this.fullState(), this)
       }
-    }
 
     return overrides
   }
@@ -528,7 +507,7 @@ export default class extends Component {
    * @return {object} react-dom
    */
   renderPagination = () => {
-     // By default, dots only show when `total` >= 2
+    // By default, dots only show when `total` >= 2
     if (this.state.total <= 1) return null
 
     let dots = []
@@ -552,12 +531,11 @@ export default class extends Component {
       marginTop: 3,
       marginBottom: 3
     }, this.props.dotStyle ]} />
-    for (let i = 0; i < this.state.total; i++) {
+    for (let i = 0; i < this.state.total; i++)
       dots.push(i === this.state.index
         ? React.cloneElement(ActiveDot, {key: i})
         : React.cloneElement(Dot, {key: i})
       )
-    }
 
     return (
       <View pointerEvents='none' style={[styles['pagination_' + this.state.dir], this.props.paginationStyle]}>
@@ -580,9 +558,8 @@ export default class extends Component {
     let button = null
 
     if (this.props.loop ||
-      this.state.index !== this.state.total - 1) {
+      this.state.index !== this.state.total - 1)
       button = this.props.nextButton || <Text style={styles.buttonText}>›</Text>
-    }
 
     return (
       <TouchableOpacity
@@ -599,9 +576,8 @@ export default class extends Component {
   renderPrevButton = () => {
     let button = null
 
-    if (this.props.loop || this.state.index !== 0) {
+    if (this.props.loop || this.state.index !== 0)
       button = this.props.prevButton || <Text style={styles.buttonText}>‹</Text>
-    }
 
     return (
       <TouchableOpacity onPress={() => button !== null && this.scrollBy(-1)}>
@@ -625,22 +601,22 @@ export default class extends Component {
   }
 
   refScrollView = view => {
-    this.scrollView = view;
+    this.scrollView = view
   }
 
   onPageScrollStateChanged = state => {
     switch (state) {
       case 'dragging':
-        return this.onScrollBegin();
+        return this.onScrollBegin()
 
       case 'idle':
       case 'settling':
-        if (this.props.onTouchEnd) this.props.onTouchEnd();
+        if (this.props.onTouchEnd) this.props.onTouchEnd()
     }
   }
 
   renderScrollView = pages => {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'ios')
       return (
         <ScrollView ref={this.refScrollView}
           {...this.props}
@@ -653,8 +629,8 @@ export default class extends Component {
           style={this.props.scrollViewStyle}>
           {pages}
         </ScrollView>
-       )
-    }
+      )
+
     return (
       <ViewPagerAndroid ref={this.refScrollView}
         {...this.props}
@@ -668,10 +644,6 @@ export default class extends Component {
     )
   }
 
-  /**
-   * Default render
-   * @return {object} react-dom
-   */
   render () {
     const state = this.state
     const props = this.props
@@ -680,7 +652,7 @@ export default class extends Component {
       total,
       width,
       height
-    } = this.state;
+    } = this.state
     const {
       children,
       containerStyle,
@@ -691,7 +663,7 @@ export default class extends Component {
       renderPagination,
       showsButtons,
       showsPagination
-    } = this.props;
+    } = this.props
     // let dir = state.dir
     // let key = 0
     const loopVal = loop ? 1 : 0
@@ -716,24 +688,22 @@ export default class extends Component {
       }
 
       pages = pages.map((page, i) => {
-        if (loadMinimal) {
+        if (loadMinimal)
           if (i >= (index + loopVal - loadMinimalSize) &&
             i <= (index + loopVal + loadMinimalSize)) {
             return <View style={pageStyle} key={i}>{children[page]}</View>
           } else {
             return (
               <View style={pageStyleLoading} key={i}>
-                {loadMinimalLoader ? loadMinimalLoader : <ActivityIndicator />}
+                {loadMinimalLoader || <ActivityIndicator />}
               </View>
             )
           }
-        } else {
+        else
           return <View style={pageStyle} key={i}>{children[page]}</View>
-        }
       })
-    } else {
+    } else
       pages = <View style={pageStyle} key={0}>{children}</View>
-    }
 
     return (
       <View style={[styles.container, containerStyle]} onLayout={this.onLayout}>
