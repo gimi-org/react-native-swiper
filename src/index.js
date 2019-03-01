@@ -357,6 +357,11 @@ export default class extends Component {
       // if `onMomentumScrollEnd` registered will be called here
       this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e, this.fullState(), this)
     })
+    if (Platform.OS === 'android') this.updateAndroidIndex(e.nativeEvent.position)
+  }
+
+  updateAndroidIndex = (pos) => {
+    this.setState({index: pos})
   }
 
   /*
