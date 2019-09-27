@@ -1,5 +1,5 @@
 /*eslint-disable */
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {
   Text,
@@ -190,34 +190,38 @@ export default class extends Component {
   autoplayTimer = null
   loopJumpTimer = null
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (!nextProps.autoplay && this.autoplayTimer) clearTimeout(this.autoplayTimer)
     this.setState(this.initState(nextProps, this.props.index !== nextProps.index))
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.autoplay()
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.autoplayTimer && clearTimeout(this.autoplayTimer)
     this.loopJumpTimer && clearTimeout(this.loopJumpTimer)
   }
 
-  componentWillUpdate (nextProps, nextState) {
+  componentWillUpdate(nextProps, nextState) {
     // If the index has changed, we notify the parent via the onIndexChanged callback
     if (this.state.index !== nextState.index) this.props.onIndexChanged(nextState.index)
   }
 
-  initState (props, updateIndex = false) {
+  initState(props, updateIndex = false) {
     // set the current state
-    const state = this.state || {width: 0, height: 0, offset: {x: 0, y: 0}}
+    const state = this.state || { width: 0, height: 0, offset: { x: 0, y: 0 } }
 
     const initState = {
       autoplayEnd: false,
+      children: null,
       loopJump: false,
       offset: {}
     }
+
+    initState.children = props.children.filter(child => child)
+    initState.total = initState.children ? initState.children.length || 1 : 0
 
     initState.total = props.children ? props.children.length || 1 : 0
 
@@ -228,7 +232,7 @@ export default class extends Component {
       initState.index = initState.total > 1 ? Math.min(props.index, initState.total - 1) : 0
 
     // Default: horizontal
-    let {width, height} = Dimensions.get('window')
+    let { width, height } = Dimensions.get('window')
     width = this.props.slideWidth || width
     initState.dir = props.horizontal === false ? 'y' : 'x'
 
@@ -258,14 +262,14 @@ export default class extends Component {
   }
 
   // include internals with state
-  fullState () {
+  fullState() {
     return Object.assign({}, this.state, this.internals)
   }
 
   onLayout = (event) => {
-    const {width, height} = event.nativeEvent.layout
+    const { width, height } = event.nativeEvent.layout
     const offset = this.internals.offset = {}
-    const state = {width: this.props.slideWidth || width, height}
+    const state = { width: this.props.slideWidth || width, height }
 
     if (this.state.total > 1) {
       let setup = this.state.index
@@ -287,7 +291,7 @@ export default class extends Component {
     // to emulate offset.
     if (Platform.OS === 'ios')
       if (this.initialRender && this.state.total > 1) {
-        this.scrollView.scrollTo({...offset, animated: false})
+        this.scrollView.scrollTo({ ...offset, animated: false })
         this.initialRender = false
       }
 
@@ -318,7 +322,7 @@ export default class extends Component {
           ? this.state.index === this.state.total - 1
           : this.state.index === 0
       )
-      ) return this.setState({autoplayEnd: true})
+      ) return this.setState({ autoplayEnd: true })
 
       this.scrollBy(this.props.autoplayDirection ? 1 : -1)
     }, this.props.autoplayTimeout * 1000)
@@ -344,9 +348,9 @@ export default class extends Component {
     // making our events coming from android compatible to updateIndex logic
     if (!e.nativeEvent.contentOffset)
       if (this.state.dir === 'x') {
-        e.nativeEvent.contentOffset = {x: e.nativeEvent.position * this.props.slideWidth || this.state.width}
+        e.nativeEvent.contentOffset = { x: e.nativeEvent.position * this.props.slideWidth || this.state.width }
       } else {
-        e.nativeEvent.contentOffset = {y: e.nativeEvent.position * this.state.height}
+        e.nativeEvent.contentOffset = { y: e.nativeEvent.position * this.state.height }
       }
 
     this.updateIndex(e.nativeEvent.contentOffset, this.state.dir, () => {
@@ -360,7 +364,7 @@ export default class extends Component {
   }
 
   updateAndroidIndex = (pos) => {
-    this.setState({index: pos})
+    this.setState({ index: pos })
   }
 
   /*
@@ -368,10 +372,10 @@ export default class extends Component {
    * @param {object} e native event
    */
   onScrollEndDrag = e => {
-    const {contentOffset} = e.nativeEvent
-    const {horizontal, children} = this.props
-    const {index} = this.state
-    const {offset} = this.internals
+    const { contentOffset } = e.nativeEvent
+    const { horizontal, children } = this.props
+    const { index } = this.state
+    const { offset } = this.internals
     const previousOffset = horizontal ? offset.x : offset.y
     const newOffset = horizontal ? contentOffset.x : contentOffset.y
 
@@ -439,10 +443,10 @@ export default class extends Component {
       // so we increment it by 1 then immediately set it to what it should be,
       // after render.
       if (offset[dir] === this.internals.offset[dir]) {
-        newState.offset = {x: 0, y: 0}
+        newState.offset = { x: 0, y: 0 }
         newState.offset[dir] = offset[dir] + 1
         this.setState(newState, () => {
-          this.setState({offset: offset}, callback)
+          this.setState({ offset: offset }, callback)
         })
       } else {
         newState.offset = offset
@@ -471,12 +475,12 @@ export default class extends Component {
       this.scrollView && this.scrollView[animated ? 'setPage' : 'setPageWithoutAnimation'](diff)
     else {
       // console.warn(diff * this.props.slideWidth)
-      this.scrollView && this.scrollView.scrollTo({x, y, animated})
+      this.scrollView && this.scrollView.scrollTo({ x, y, animated })
     }
 
     // update scroll state
     this.internals.isScrolling = true
-    this.setState({autoplayEnd: false})
+    this.setState({ autoplayEnd: false })
 
     // trigger onScrollEnd manually in android
     if (!animated || Platform.OS !== 'ios')
@@ -545,11 +549,11 @@ export default class extends Component {
       marginRight: 3,
       marginTop: 3,
       marginBottom: 3
-    }, this.props.dotStyle ]} />
+    }, this.props.dotStyle]} />
     for (let i = 0; i < this.state.total; i++)
       dots.push(i === this.state.index
-        ? React.cloneElement(ActiveDot, {key: i})
-        : React.cloneElement(Dot, {key: i})
+        ? React.cloneElement(ActiveDot, { key: i })
+        : React.cloneElement(Dot, { key: i })
       )
 
     return (
@@ -631,31 +635,31 @@ export default class extends Component {
   }
 
   renderScrollView = pages => {
-      return (
-        <ScrollView ref={this.refScrollView}
-          {...this.props}
-          {...this.scrollViewPropOverrides()}
-          contentContainerStyle={[styles.wrapperIOS, this.props.style]}
-          contentOffset={this.state.offset}
-          onScrollBeginDrag={this.onScrollBegin}
-          onMomentumScrollEnd={this.onScrollEnd}
-          onScrollEndDrag={this.onScrollEndDrag}
-          style={this.props.scrollViewStyle}>
-          {pages}
-        </ScrollView>
-      )
+    return (
+      <ScrollView ref={this.refScrollView}
+        {...this.props}
+        {...this.scrollViewPropOverrides()}
+        contentContainerStyle={[styles.wrapperIOS, this.props.style]}
+        contentOffset={this.state.offset}
+        onScrollBeginDrag={this.onScrollBegin}
+        onMomentumScrollEnd={this.onScrollEnd}
+        onScrollEndDrag={this.onScrollEndDrag}
+        style={this.props.scrollViewStyle}>
+        {pages}
+      </ScrollView>
+    )
   }
 
-  render () {
+  render() {
     const state = this.state
     const props = this.props
     const {
       index,
       total,
       width,
-      height, 
+      height,
       children
-    } = this.state
+    } = state
     const {
       containerStyle,
       loop,
@@ -664,14 +668,14 @@ export default class extends Component {
       loadMinimalLoader,
       renderPagination,
       showsButtons,
-      showsPagination
-    } = this.props
+      showsPagination,
+    } = props
     // let dir = state.dir
     // let key = 0
     const loopVal = loop ? 1 : 0
     let pages = []
 
-    const pageStyle = [{width: width, height: height}, styles.slide]
+    const pageStyle = [{ width: width, height: height }, styles.slide]
     const pageStyleLoading = {
       width,
       height,
