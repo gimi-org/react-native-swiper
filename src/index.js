@@ -270,7 +270,7 @@ export default class extends Component {
       initState.width = width
     }
 
-    if (props.height)
+    if (props.height) {
       initState.height = props.height
     } else if (this.state && this.state.height) {
       initState.height = this.state.height
