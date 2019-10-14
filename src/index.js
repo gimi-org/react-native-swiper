@@ -421,6 +421,7 @@ export default class extends Component {
       (index === 0 || index === children.length - 1)
     ) {
       this.internals.isScrolling = false
+    }
   }
 
   /**
@@ -694,6 +695,7 @@ export default class extends Component {
 
     if (this.props.loop || this.state.index !== this.state.total - 1) {
       button = this.props.nextButton || <Text style={styles.buttonText}>›</Text>
+    }
 
     return (
       <TouchableOpacity
