@@ -249,7 +249,7 @@ export default class extends Component {
 
     initState.total = initState.children ? initState.children.length || 1 : 0
 
-    if (state.total === initState.total && !updateIndex)
+    if (state.total === initState.total && !updateIndex) {
       // retain the index
       initState.index = state.index
     } else {
