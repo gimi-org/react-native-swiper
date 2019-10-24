@@ -389,6 +389,9 @@ export default class extends Component {
         e.nativeEvent.contentOffset = { y: e.nativeEvent.position * this.state.height }
       }
 
+    // This line is super important for android not to fuck up its own state when calling scrollBy
+    if (this.state.index !== 0 && this.state.index === this.props.index) return
+
     this.updateIndex(e.nativeEvent.contentOffset, this.state.dir, () => {
       this.autoplay()
       this.loopJump()
