@@ -390,7 +390,7 @@ export default class extends Component {
       }
 
     // This line is super important for android not to fuck up its own state when calling scrollBy
-    if (this.state.index !== 0 && this.state.index === this.props.index) return
+    if (Platform.OS !== 'ios' && this.state.index !== 0 && this.state.index === this.props.index) return
 
     this.updateIndex(e.nativeEvent.contentOffset, this.state.dir, () => {
       this.autoplay()
